@@ -1,5 +1,6 @@
 package security.test.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
@@ -53,8 +55,8 @@ public class UserController {
 		return userService.delete(userId);
 	}
 	
-	
-	@PostMapping
+	@PostMapping(consumes = "application/json")
+	@ResponseStatus(HttpStatus.CREATED)
 	private Mono<User> saveUser(@RequestBody Mono<User> user) {
 		System.out.println("post user start");
 		Mono<User> userMono =  userService.saveOrUpdate(user);
@@ -62,13 +64,13 @@ public class UserController {
 		return userMono;
 	}
 
-	@PostMapping
-	private Mono<User> saveAllUsers(@RequestBody Mono<User> user) {
-		System.out.println("post user start");
-		Mono<User> userMono =  userService.saveOrUpdate(user);
-		System.out.println("post user end");
-		return userMono;
-	}
+//	@PostMapping
+//	private Mono<User> saveAllUsers(@RequestBody Mono<User> user) {
+//		System.out.println("post user start");
+//		Mono<User> userMono =  userService.saveOrUpdate(user);
+//		System.out.println("post user end");
+//		return userMono;
+//	}
 	
 	@PutMapping("/user")
 	private Mono<User> update(@RequestBody Mono<User> user) {

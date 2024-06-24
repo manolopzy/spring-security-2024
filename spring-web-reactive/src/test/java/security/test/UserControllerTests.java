@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import ch.qos.logback.core.boolex.Matcher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import security.test.controller.UserController;
@@ -63,35 +64,35 @@ public class UserControllerTests {
 		.contains(Arrays.copyOf(users, 3));
 	}
 	
-//	@SuppressWarnings("unchecked")
-//	@Test
-//	public void shouldSaveATaco() {
-//		User[] users = { 
-//				User.of("manolo", "manolo", "Spain"), 
-//				User.of("manuel", "manuel", "Spain"),
-//				User.of("David", "David", "Spain") 
-//				};
-//		// Ctrl + 1 to generate a new local variable to receive the returned value from
-//		// a method call
-//		
-//		UserService userService = Mockito.mock(UserService.class);
-//		Mono<User> unsavedUserMono = 
-//				Mono.just(User.of("manolo", "manolo", "Spain"));
-//		User savedUser = User.of("manolo", "manolo", "Spain");
-//		Mono<User> savedUserMono = 
-//				Mono.just(savedUser);
-//		when(userService.saveOrUpdate((Mono<User>) any(Mono.class))).thenReturn(savedUserMono);
-//		
-//		WebTestClient webTestClient = 
-//				WebTestClient.bindToController(new UserController(userService)).build();
-//		
-//		webTestClient.post()
-//		.uri("/users")
-//		.contentType(MediaType.APPLICATION_JSON)
-//		.body(unsavedUserMono, User.class)
-//		.exchange()
-//		.expectStatus().isCreated()
-//		.expectBody(User.class)
-//		.isEqualTo(savedUser);
-//	}
+	
+	@Test
+	public void shouldSaveATaco() {
+		User[] users = { 
+				User.of("manolo", "manolo", "Spain"), 
+				User.of("manuel", "manuel", "Spain"),
+				User.of("David", "David", "Spain") 
+				};
+		// Ctrl + 1 to generate a new local variable to receive the returned value from
+		// a method call
+		
+		UserService userService = Mockito.mock(UserService.class);
+		Mono<User> unsavedUserMono = 
+				Mono.just(User.of("manolo", "manolo", "Spain"));
+		User savedUser = User.of("manolo", "manolo", "Spain");
+		Mono<User> savedUserMono = 
+				Mono.just(savedUser);
+		when(userService.saveOrUpdate(unsavedUserMono)).thenReturn(savedUserMono);
+		
+		WebTestClient webTestClient = 
+				WebTestClient.bindToController(new UserController(userService)).build();
+		
+		webTestClient.post()
+		.uri("/users")
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(unsavedUserMono, User.class)
+		.exchange()
+		.expectStatus().isCreated()
+		.expectBody(User.class)
+		.isEqualTo(savedUser);
+	}
 }
