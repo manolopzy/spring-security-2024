@@ -4,14 +4,25 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsUtils;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+
+import reactor.core.publisher.Mono;
 
 /**
  * CORS must be processed before Spring Security comes into action since
@@ -22,10 +33,17 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 @EnableWebFluxSecurity
 public class WebSecurityConfig {
 
-	@Bean
-	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+    /**
+     * Disable spring security cors default configuration, because it runs before 
+     * any thing else, so if we want create a {@link CorsWebFilter} which is 
+     * the preferable way for Web Flux cors configuration ...
+     * @param http
+     * @return
+     */
+    @Bean
+    SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 		http.cors(cors -> cors.disable()).securityMatcher(new PathPatternParserServerWebExchangeMatcher("/**"))
-				.authorizeExchange(exchanges -> exchanges.anyExchange().authenticated()).httpBasic();
+				.authorizeExchange(exchanges -> exchanges.anyExchange().permitAll());
 		return http.build();
 	}
 
@@ -33,14 +51,18 @@ public class WebSecurityConfig {
 	public CorsConfigurationSource corsConfiguration() {
 		CorsConfiguration corsConfig = new CorsConfiguration();
 		corsConfig.applyPermitDefaultValues();
-		corsConfig.setAllowCredentials(true);
-		corsConfig.addAllowedMethod("GET");
-		corsConfig.addAllowedMethod("PATCH");
-		corsConfig.addAllowedMethod("POST");
-		corsConfig.addAllowedMethod("OPTIONS");
+		//corsConfig.setAllowCredentials(true);
+//		corsConfig.addAllowedMethod("GET");
+//		corsConfig.addAllowedMethod("DELETE");
+//		corsConfig.addAllowedMethod("PATCH");
+//		corsConfig.addAllowedMethod("POST");
+//		corsConfig.addAllowedMethod("OPTIONS");
+		corsConfig.setAllowedMethods(Arrays.asList("GET", "DELETE", "POST"));
 		corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-		corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type"));
-		corsConfig.setExposedHeaders(Arrays.asList("X-Get-Header"));
+//		corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type"));
+//		corsConfig.setExposedHeaders(Arrays.asList("X-Get-Header"));
+		corsConfig.setAllowedHeaders(Arrays.asList("*"));
+		corsConfig.setExposedHeaders(Arrays.asList("*"));
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", corsConfig);
 		return source;
@@ -50,4 +72,30 @@ public class WebSecurityConfig {
 	public CorsWebFilter corsWebFilter() {
 		return new CorsWebFilter(corsConfiguration());
 	}
+	
+	
+//	private static final String ALLOWED_HEADERS = "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN";
+//	  private static final String ALLOWED_METHODS = "GET, PUT, POST, DELETE, OPTIONS";
+//	  private static final String ALLOWED_ORIGIN = "*";
+//	  private static final String MAX_AGE = "3600";
+//
+//	  @Bean
+//	  public WebFilter corsFilter() {
+//	    return (ServerWebExchange ctx, WebFilterChain chain) -> {
+//	      ServerHttpRequest request = ctx.getRequest();
+//	      if (CorsUtils.isCorsRequest(request)) {
+//	        ServerHttpResponse response = ctx.getResponse();
+//	        HttpHeaders headers = response.getHeaders();
+//	        headers.add("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+//	        headers.add("Access-Control-Allow-Methods", ALLOWED_METHODS);
+//	        headers.add("Access-Control-Max-Age", MAX_AGE);
+//	        headers.add("Access-Control-Allow-Headers",ALLOWED_HEADERS);
+//	        if (request.getMethod() == HttpMethod.OPTIONS) {
+//	          response.setStatusCode(HttpStatus.OK);
+//	          return Mono.empty();
+//	        }
+//	      }
+//	      return chain.filter(ctx);
+//	    };
+//	  }
 }
