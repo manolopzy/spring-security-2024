@@ -12,6 +12,11 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -98,7 +103,18 @@ public class WebSecurityConfig {
 		return new CorsWebFilter(corsConfiguration());
 	}
 	
-	
+	@Bean
+    public MapReactiveUserDetailsService userDetailsService() {
+        UserDetails user = User.withUsername("username")
+                .password("password")
+                .roles("USER")
+                .build();
+        return new MapReactiveUserDetailsService(user);
+    }
+	@Bean
+	PasswordEncoder encoder() {
+		return new BCryptPasswordEncoder();
+	}
 //	private static final String ALLOWED_HEADERS = "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN";
 //	  private static final String ALLOWED_METHODS = "GET, PUT, POST, DELETE, OPTIONS";
 //	  private static final String ALLOWED_ORIGIN = "*";
