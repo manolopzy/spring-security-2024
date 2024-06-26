@@ -1,0 +1,17 @@
+HTTP status codes are three-digit numbers returned by servers to 
+indicate the outcome of a request. They are grouped into five classes, 
+with the first digit defining the class. For instance, 4xx codes 
+signify client errors, while 5xx codes indicate server errors.
+
+
+In the 4xx class, 401 and 403 are particularly noteworthy. 
+The "401 Unauthorized" status code indicates that the request 
+lacks valid authentication credentials. On the other hand, the 
+"403 Forbidden" status code signifies that the server understands 
+the request but refuses to fulfill it. These two stages in access 
+control are usually considered as authentication and authorization.
+
+The error 401 Unauthorized can be a bit confusing. While 401 
+is an authentication error code, its description labels it as 
+Unauthorized. Let’s dive into the 401 code to understand it in detail.
+
