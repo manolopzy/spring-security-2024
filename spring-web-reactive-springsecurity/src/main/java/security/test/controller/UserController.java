@@ -21,8 +21,11 @@ import security.test.service.UserService;
 /**
  * It seems like that the controller class level cross origin configuration 
  * will be overwritten by the global configuration
+ * 
+ * Except for "maxAge" and other single valued properties, others are 
+ * additive such as "origins"
  */
-@CrossOrigin(origins = "http://someorigin:3000", methods = {RequestMethod.DELETE, RequestMethod.GET})
+@CrossOrigin(origins = "http://someorigin:3000", methods = {RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST})
 @RestController
 @RequestMapping("/users")
 public class UserController {
