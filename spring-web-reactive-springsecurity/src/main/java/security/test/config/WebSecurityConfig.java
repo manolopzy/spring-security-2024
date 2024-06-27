@@ -59,7 +59,7 @@ public class WebSecurityConfig {
     	http.httpBasic(Customizer.withDefaults());
     	/**
     	 * On the contrary, this configuration requires that all 
-    	 * requests are anthenticated
+    	 * requests are authenticated
     	 */
     	//Failed to load resource: the server responded with a status of 401 (Unauthorized)
 //    	http.securityMatcher(new PathPatternParserServerWebExchangeMatcher("/**"))
@@ -82,13 +82,29 @@ public class WebSecurityConfig {
 //                                .map((username) -> username.equals(context.getVariables().get("username")))
 //                                .map(AuthorizationDecision::new)
 //                        )
-                        .pathMatchers("/fruits/**").permitAll()
-                        .pathMatchers("/users/**").permitAll()
-                        .pathMatchers("/auth/**").permitAll());
+                        
+                        .anyExchange().permitAll());
+//                        .pathMatchers("/fruits/**").permitAll()
+//                        .pathMatchers("/users/**").permitAll()
+//                        .pathMatchers("/auth/**").permitAll());
                         // any other request requires the user to be authenticated););
+    	//By default, the csrf protection is not disabled
+    	//Cross origin request will be rejected by returning a status code 403 forbidden
+    	//https://docs.spring.io/spring-security/reference/reactive/exploits/csrf.html
+    	//https://www.baeldung.com/java-spring-fix-403-error
+    	http.csrf(csrf -> csrf.disable());
 		return http.build();
 	}
-
+    /**
+     * By default, the csrf protection is not disabled
+     * @param http
+     * @return
+     */
+//    @Bean
+//    SecurityWebFilterChain crsfWebFilterChain(ServerHttpSecurity http) {
+//    	http.csrf(csrf -> csrf.disable());
+//		return http.build();
+//	}
     /**
      * When {@link @EnableWebFluxSecurity} is used, the default cors configuration 
      * will be overwritten by Spring webflux security
@@ -98,7 +114,7 @@ public class WebSecurityConfig {
 	public CorsConfigurationSource corsConfiguration() {
 		CorsConfiguration corsConfig = new CorsConfiguration();
 		corsConfig.applyPermitDefaultValues();
-		//corsConfig.setAllowCredentials(true);
+		corsConfig.setAllowCredentials(true);
 //		corsConfig.addAllowedMethod("GET");
 //		corsConfig.addAllowedMethod("DELETE");
 //		corsConfig.addAllowedMethod("PATCH");
@@ -106,7 +122,7 @@ public class WebSecurityConfig {
 //		corsConfig.addAllowedMethod("OPTIONS");
 		//corsConfig.setAllowedMethods(Arrays.asList("POST"));
 		corsConfig.setAllowedMethods(Arrays.asList("GET", "DELETE", "POST"));
-		corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+		corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001"));
 //		corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type"));
 //		corsConfig.setExposedHeaders(Arrays.asList("X-Get-Header"));
 		corsConfig.setAllowedHeaders(Arrays.asList("*"));
